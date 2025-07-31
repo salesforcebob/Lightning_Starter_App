@@ -89,7 +89,7 @@ Code is not complete until it is proven to work correctly and reliably through a
 
 Manual steps are a source of error and inefficiency. Automate the entire process from code commit to production deployment.
 
-* **Version Control is Law:** All metadata, configuration, tests, and documentation must reside in a Git repository.  
+* **Version Control is Law:** All metadata, configuration, tests, and documentation must reside in a Git repository. Commit changes with detailed commit comments. Commit when asked by the user.
 * **Implement a CI/CD Pipeline:** Use tools like GitHub Actions, GitLab CI, or Jenkins to automate the unlocked package lifecycle. A typical pipeline for a change should include these stages:  
   1. **Commit:** Developer commits code to a feature branch.  
   2. **Validate:** The CI server spins up a scratch org, deploys the package metadata, and runs all Apex and LWC tests.  
