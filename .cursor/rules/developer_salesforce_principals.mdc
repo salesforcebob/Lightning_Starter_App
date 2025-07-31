@@ -1,0 +1,111 @@
+---
+description: Salesforce development principals you must ALWAYS follow
+globs: 
+alwaysApply: true
+---
+### **Guiding Principles for Expert Salesforce Development**
+
+These rules are designed to ensure the creation of secure, scalable, and maintainable Salesforce applications, delivered efficiently via unlocked packages. The agent will act as an expert-level Salesforce architect and developer, adhering to the highest standards of the ecosystem.
+
+#### **Principle 1: Adopt the Source-Driven, Package-First Mindset**
+
+The foundation of modern Salesforce development is treating version control as the single source of truth and organizing all metadata into modular, independent unlocked packages.
+
+* **Decompose the Monolith:** Always begin by identifying logical, self-contained domains of functionality. Each domain (e.g., "Sales Invoicing," "Service Case Utilities," "Custom CPQ Logic") should become its own unlocked package. Resist the temptation to put unrelated metadata in the same package.  
+* **Define the Blueprint in sfdx-project.json:** This file is the master plan. Meticulously define package directories, dependencies on other packages (both internal and external), and feature definitions. Use aliases for clarity.  
+* **Manage Dependencies Explicitly:** A package must declare its dependencies on other packages. This enforces modularity and prevents the creation of a new "happy soup" of intertwined code. The dependency graph must always be acyclic.  
+* **Version with Semantic Versioning:** Strictly adhere to Semantic Versioning (Major.Minor.Patch) for all package versions. This communicates the nature of changes to all consumers of the package.  
+* **Develop in Ephemeral Scratch Orgs:** All development and unit testing must occur in source-tracked scratch orgs created from a definition file. This ensures a clean, predictable build environment and prevents reliance on metadata that isn't part of the source.  
+* **Use Org-Dependent Unlocked Packages Sparingly:** Only use org-dependent packages as a strategic tool for migrating legacy metadata into a package-based model where dependencies on the production org are unavoidable. The default and preferred approach is always a fully independent unlocked package.
+
+#### **Principle 2: Master the Apex Domain with Discipline**
+
+Apex is powerful but runs in a strictly governed, multi-tenant environment. Code must be efficient, scalable, and secure by design.
+
+* **Respect Governor Limits Religiously:**  
+  * **Never place SOQL or DML inside a loop.** This is the cardinal sin of Apex development.  
+  * **Bulkify Everything:** Every piece of logic must be designed to process collections of records (Lists, Sets, Maps), not single records. This applies to triggers, controllers, and all service methods.  
+  * **Use Efficient Queries:** Write selective SOQL queries using indexed fields. Only query the fields you absolutely need.  
+* **Implement Enterprise-Grade Patterns:**  
+  * **Service Layer:** Business logic must be encapsulated in service classes, separate from UI controllers and triggers.  
+  * **Selector Layer:** All SOQL queries must be isolated in dedicated "Selector" classes. This centralizes data access, improves reusability, and makes queries easier to optimize.  
+  * **Trigger Frameworks:** Use a single trigger per object, managed by a handler class that delegates logic to domain service classes. This controls the order of execution and prevents trigger recursion.  
+* **Handle Asynchronous Processing Correctly:**  
+  * Use @future methods for simple, non-critical callouts.  
+  * Use Queueable Apex for more complex processing that requires chaining jobs or tracking job IDs.  
+  * Use Batch Apex for processing large data volumes (thousands to millions of records).  
+  * Use Schedulable Apex for recurring jobs.  
+* **Enforce Security by Default:**  
+  * Check for Field-Level Security (FLS) and Object-Level Security (CRUD) before performing DML operations using Security.stripInaccessible.  
+  * Use the WITH SECURITY\_ENFORCED clause in SOQL queries to enforce FLS and CRUD at the database level.  
+  * Default all Apex classes to with sharing unless a specific, documented reason exists to run in system context (without sharing).  
+* **Implement Robust Error Handling:**  
+  * Wrap all DML and SOQL operations in try/catch blocks.  
+  * Use the Database class methods (e.g., Database.insert(records, allOrNone: false)) to allow for partial success and inspect failures.  
+  * Create a custom exception class and a centralized logging framework (e.g., logging to a custom object) to provide detailed, actionable error information.  
+  * For LWC controllers, use AuraHandledException to send clean, user-friendly error messages to the client-side.
+
+#### **Principle 3: Engineer High-Performance, Modern User Interfaces**
+
+Build Lightning Web Components (LWC) and LWR sites that are fast, responsive, and maintainable, leveraging modern web standards.
+
+* **Prioritize Performance:**  
+  * **Conditional Rendering:** Use the if:true|false directives to avoid rendering components that are not needed.  
+  * **Lazy Load Data:** Do not load all data at once. Implement pagination, infinite scroll, or other lazy-loading patterns for large data sets.  
+  * **Cache with Lightning Data Service (LDS) and Apex:** Use base components (lightning-record-form, etc.) and wire adapters that leverage LDS caching. For Apex calls, use @AuraEnabled(cacheable=true) wherever possible to enable client-side caching.  
+* **Build Composable and Reusable Components:**  
+  * Create small, single-purpose components.  
+  * Favor component composition over inheritance.  
+  * Communicate up from child to parent via custom events. Pass data down from parent to child via public properties (@api).  
+  * For communication between components that are not in a direct hierarchy, use the **Lightning Message Service (LMS)**.  
+* **Develop for LWR When Appropriate:**  
+  * Recognize that LWR is a high-performance runtime for building digital experiences (Experience Cloud sites). It is not for the core Salesforce UI.  
+  * Leverage LWR's direct use of web standards for building fast, publicly accessible sites like marketing pages, help centers, and microsites.  
+* **Design for Admins with Smart Configuration:**  
+  * Expose component properties for configuration in the Lightning App Builder and Experience Builder through the js-meta.xml file.  
+  * For complex configuration needs (e.g., dynamic picklists based on object fields), create **Custom Property Editors (CPEs)** to provide a rich, user-friendly setup experience for administrators.
+
+#### **Principle 4: Enforce Quality Through Rigorous, Multi-Layered Testing**
+
+Code is not complete until it is proven to work correctly and reliably through automated tests.
+
+* **Apex Unit Tests (TDD Approach):**  
+  * Write Apex tests *before* or *alongside* the implementation logic.  
+  * **Never use (SeeAllData=true)**. All test data must be created by a test data factory class.  
+  * Assert every possible outcome, including positive cases, negative cases, and bulk scenarios. Use System.assertEquals() and other assert methods liberally.  
+  * Achieve a minimum of **90% code coverage**, but focus on the quality of assertions, not just the coverage number.  
+  * Use Test.startTest() and Test.stopTest() to create a fresh set of governor limits for the code under test.  
+* **LWC Unit Tests (Jest):**  
+  * For every LWC, create a corresponding \_\_tests\_\_ folder with Jest tests.  
+  * Test the component's rendering output based on its properties.  
+  * Test that events are fired correctly with the expected payload.  
+  * Test user interactions (clicks, inputs) and their outcomes.  
+  * **Mock all Apex calls** to isolate the component and prevent reliance on a live Salesforce org for UI testing.  
+* **End-to-End (E2E) Testing:**  
+  * For critical user journeys, create E2E tests using a framework like Playwright, Cypress, or Selenium.  
+  * These tests should run in a dedicated sandbox environment and validate the flow across multiple components and Apex logic.
+
+#### **Principle 5: Automate the Entire Application Lifecycle**
+
+Manual steps are a source of error and inefficiency. Automate the entire process from code commit to production deployment.
+
+* **Version Control is Law:** All metadata, configuration, tests, and documentation must reside in a Git repository.  
+* **Implement a CI/CD Pipeline:** Use tools like GitHub Actions, GitLab CI, or Jenkins to automate the unlocked package lifecycle. A typical pipeline for a change should include these stages:  
+  1. **Commit:** Developer commits code to a feature branch.  
+  2. **Validate:** The CI server spins up a scratch org, deploys the package metadata, and runs all Apex and LWC tests.  
+  3. **Create Package Version:** If validation passes, automatically create a new unlocked package version.  
+  4. **Deploy to QA:** Install the new package version into a persistent QA sandbox for E2E testing and manual validation.  
+  5. **Promote & Deploy to Production:** Upon approval, automatically promote the package version to "released" and use it to deploy to production.  
+* **Use the Salesforce CLI (sf) for All Operations:** All interactions with Salesforce orgs, from creating scratch orgs to creating and installing packages, must be done via sf commands to ensure scriptability and automation.
+
+#### **Principle 6: Maintain Impeccable Documentation and Clarity**
+
+Code is read far more often than it is written. Your work must be immediately understandable to other developers.
+
+* **Document in Code:**  
+  * Use **ApexDoc** syntax for all Apex classes and methods.  
+  * Use **JSDoc** syntax for all LWC JavaScript properties and functions.  
+  * Write clear, concise comments to explain the "why" behind complex or non-obvious logic.  
+* **Maintain Package README.md Files:** Each unlocked package must have a README.md file that explains its purpose, its key components, its dependencies, and any setup instructions.  
+* **Visualize Architecture with Mermaid:** For complex relationships between packages or within a package's architecture, embed Mermaid diagrams directly into your Markdown documentation files.  
+* **Keep a CHANGELOG.md:** Maintain a changelog for each package to document notable changes in each new version. Don't use dates in your changelog, only reference version for updates.
