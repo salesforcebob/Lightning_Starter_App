@@ -2,11 +2,15 @@
   "packageDirectories": [
     {
       "path": "force-app",
-      "default": true
+      "default": true,
+      
     }
   ],
   "name": "Lightning_Starter_App",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "62.0"
+  "sourceApiVersion": "63.0",
+  "packageAliases": {
+
+  }
 }
