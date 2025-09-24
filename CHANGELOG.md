@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Updated `force-app/main/default/manifest/package.xml` to include only metadata types with corresponding directories under `force-app/main/default/`. Added types: `AuraDefinitionBundle`, `ContentAsset`, `LightningMessageChannel`. Switched `FlexiPage` to wildcard. Removed types not represented by a directory: `Profile`, `GenAiPromptTemplateActv`.
 - Updated package.json dependencies to resolve ESLint plugin version conflicts
 - Fixed lint script to properly handle LWC-only projects
 
