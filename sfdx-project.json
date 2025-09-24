@@ -5,15 +5,12 @@
       "versionNumber": "0.1.0.NEXT",
       "path": "force-app",
       "default": true,
-      "package": "Campaign Brief Builder",
+      "package": "My Awesome App",
       "versionDescription": ""
     }
   ],
   "name": "Lightning_Starter_App",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "63.0",
-  "packageAliases": {
-    "Campaign Brief Builder": "0HoKj000000TXR4KAO"
-  }
+  "sourceApiVersion": "63.0"
 }
