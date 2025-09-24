@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- README.md placeholders added to empty metadata directories under `force-app/main/default/` to ensure directories are tracked in version control and documented (applications, aura, bots, classes, contentassets, flexipages, flows, genAiFunctions, genAiPlanners, genAiPlugins, genAiPromptTemplates, layouts, messageChannels, objects, permissionsets, staticresources, tabs, triggers)
 - **Hello World Lightning Web Component** - A simple, configurable LWC that displays a customizable greeting message
   - Configurable message property through Lightning App Builder
   - Professional Lightning Card design with world icon
