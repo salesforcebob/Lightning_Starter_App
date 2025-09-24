@@ -108,7 +108,7 @@ This template follows **source-driven development** best practices:
 3. **Package & Version**
    ```bash
    # Create package version
-   sf package version create --package "Campaign Brief Builder" --installation-key-bypass --wait 10
+   sf package version create --package "My Awesome App" --installation-key-bypass --wait 10
    ```
 
 ### Key Commands
@@ -166,7 +166,7 @@ This template is optimized for **unlocked package development**:
 
 ```bash
 # Create package version
-sf package version create --package "Campaign Brief Builder" --installation-key-bypass --wait 10
+sf package version create --package "My Awesome App" --installation-key-bypass --wait 10
 
 # Install in target org
 sf package install --package 04tXXXXXXXXXXXXXXX --target-org production-org
